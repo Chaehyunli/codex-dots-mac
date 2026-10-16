@@ -2,9 +2,30 @@
 
 마우스와 로컬 작업 이벤트에 반응하는 Swift/AppKit 데스크톱 펫입니다. 현재 소스는 **개인용 0.3.2**이며, 캐릭터 위에 커서를 올리면 랩 댄스를 추는 기능이 포함됩니다. 이전 공유용 ZIP은 0.3.0으로 유지되어 있으므로 최신 개발을 이어가려면 ZIP이 아닌 이 저장소를 사용하세요.
 
-## GitHub Private 저장소로 관리하기
+## 처음 시작하기: clone → 설치 → 사용
 
-**이 README가 있는 `Dots-source` 폴더 자체가 저장소 루트입니다.** 원격 저장소는 [Chaehyunli/codex-dots-mac](https://github.com/Chaehyunli/codex-dots-mac)입니다. Private 저장소이므로 clone하는 사람에게 별도 접근 권한이 필요합니다. 실행 앱이 놓인 바탕화면이나 이 대화의 `outputs` 폴더 전체를 Git에 올리지 마세요.
+**준비물:** Apple Silicon Mac(macOS 13 이상), Xcode Command Line Tools. 개발 도구가 없다면 터미널에서 `xcode-select --install`을 실행하고 설치를 완료하세요. 아래 명령은 새 Mac의 터미널에서 순서대로 실행합니다.
+
+```sh
+git clone https://github.com/Chaehyunli/codex-dots-mac.git Dots-source
+cd Dots-source
+zsh build.sh ./dist/Dots.app
+```
+
+빌드가 끝나면 `dist/Dots.app`이 생깁니다. **이 앱은 clone에 포함되지 않고 각 Mac에서 빌드합니다.** `dist`에서 그대로 사용할 거라면 `open ./dist/Dots.app`으로 실행하세요. `/Applications`나 바탕화면에서 사용할 거라면 **실행·권한 설정 전에** Finder로 앱을 원하는 최종 위치에 옮긴 뒤 그곳의 `Dots.app`을 여세요. 같은 이름의 앱 복사본을 여러 개 실행하지 마세요.
+
+처음 실행한 뒤 바탕화면 클릭 따라오기를 사용하려면:
+
+1. 우사기를 우클릭하거나 메뉴 막대 토끼 아이콘에서 **사용 방법 / 권한 → 바탕화면 따라오기 설정**을 엽니다. 표시된 **현재 실행 앱 경로**를 확인합니다.
+2. macOS **시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용**에서 **바로 그 위치의 `Dots.app`**을 허용합니다. 목록에 없으면 `+`로 추가하세요.
+3. Dots 메뉴의 **바탕화면 클릭 따라오기**를 켜고, 앱을 완전히 종료한 뒤 다시 실행합니다. **사용 방법 / 권한**에 `현재 실행 앱에 권한 적용됨`이 표시되는지 확인하세요.
+4. 우사기와 같은 모니터의 **아이콘·창이 없는 빈 바탕화면을 왼쪽 클릭**하면 그쪽으로 달려옵니다. 작동하지 않으면 아래 **빈 바탕화면 클릭 → 따라오기: 새 Mac 설정**의 문제 해결 절차를 따르세요.
+
+기본 사용법: **우사기 클릭 → 회전**, **우사기 위에 커서 올리기 → 랩 댄스**, **우사기 드래그 → 위치 이동**입니다. Codex/VS Code의 GPT 작업 중 자동 춤은 선택 기능이며, 앱 설치만으로 연결되지 않습니다. 사용하려면 [GPT-CONNECTION.md](GPT-CONNECTION.md)의 훅 설정을 별도로 진행하세요. 앱 안에서도 우클릭 또는 메뉴 막대 토끼 아이콘의 **사용 방법 / 권한**을 열어 조작법을 확인할 수 있습니다.
+
+## GitHub 저장소로 관리하기
+
+**이 README가 있는 `Dots-source` 폴더 자체가 저장소 루트입니다.** 원격 저장소는 [Chaehyunli/codex-dots-mac](https://github.com/Chaehyunli/codex-dots-mac)입니다. 실행 앱이 놓인 바탕화면이나 로컬 빌드 산출물 폴더 전체를 Git에 올리지 마세요.
 
 ```text
 Dots-source/                ← 저장소 루트
@@ -22,22 +43,11 @@ Dots-source/                ← 저장소 루트
 
 `Resources/spritesheet.webp`, `animations.json`, `keyposes.png`, `Dots.icns`는 빌드/개발에 필요한 **프로젝트 에셋**이므로 Git에 포함해야 합니다. PNG/WebP 전체를 ignore하면 다른 컴퓨터에서 캐릭터를 표시하거나 재패킹할 수 없습니다. `.app`, ZIP, 캐시, 개인 훅 설정, 인증서와 비밀 값은 포함하지 않습니다. `rap-keyposes-v3.png`와 과거 문서는 이력 참고 자료이며 현재 앱에는 사용하지 않습니다.
 
-GitHub 인증은 사용자의 Git 자격 증명 도구/SSH 등을 사용하세요. 토큰을 코드·README·원격 URL에 직접 넣지 마세요. Private 저장소라도 캐릭터의 권리나 재배포 허가가 자동으로 생기지는 않습니다.
+GitHub에 변경 사항을 push할 때는 사용자의 Git 자격 증명 도구/SSH 등을 사용하세요. 토큰을 코드·README·원격 URL에 직접 넣지 마세요. 저장소를 공개하더라도 캐릭터의 권리나 재배포 허가가 자동으로 생기지는 않습니다.
 
-## 다른 Mac에서 이어서 개발
+## 빌드·권한 상세 및 다른 Mac에서 개발
 
-Apple Silicon Mac, macOS 13 이상 대상입니다. 빌드에는 Xcode Command Line Tools와 Swift 컴파일러가 필요합니다. 이 버전의 검증 환경은 macOS 26.5.1 / Swift 6.3.3입니다. Intel/Windows용 빌드가 아닙니다.
-
-```sh
-# 개발 도구가 없는 Mac에서 한 번 실행하고 설치를 완료
-xcode-select --install
-
-git clone https://github.com/Chaehyunli/codex-dots-mac.git Dots-source
-cd Dots-source
-zsh build.sh ./dist/Dots.app
-# dist에서 그대로 사용할 경우에만 실행. 옮길 계획이라면 먼저 Finder에서 옮기세요.
-open ./dist/Dots.app
-```
+이 버전의 검증 환경은 macOS 26.5.1 / Swift 6.3.3입니다. Intel/Windows용 빌드가 아닙니다.
 
 `build.sh`는 컴파일, 리소스 복사, 로컬 ad-hoc 서명, 자동 테스트를 수행합니다. 기본 출력도 `./dist/Dots.app`이며 Git에서 제외됩니다. 저장소에 이미지가 포함되어 있으므로 일반 빌드에는 이미지 생성 API·Python·cwebp가 필요하지 않습니다. `Package.swift`만으로 실행하면 리소스 앱 번들이 구성되지 않으므로 **앱 제작은 build.sh를 사용**하세요. 다시 빌드할 때는 **그 출력 경로의 앱**이 실행 중이면 먼저 종료합니다.
 
@@ -77,7 +87,7 @@ git push
 
 ## 기능 및 기존 사용 안내
 
-GitHub clone으로 새 Mac에 설치할 때는 위의 **다른 Mac에서 이어서 개발** 및 **빈 바탕화면 클릭 → 따라오기** 절차를 따르세요. [SHARING.md](SHARING.md)는 이전 0.3.0 ZIP 공유 안내입니다. 0.3은 승인된 원본 키포즈만 사용하며, Pets에서 새로 생성한 그림이나 rap-v3 재생성 그림은 실행 리소스에 사용하지 않습니다. 랩은 정면 좌우 반복으로 정리했습니다. 휴식·기상은 원본 그림을 40도 회전하고 되돌리는 Swift 렌더링 전환입니다(새 팔다리 포즈 생성 아님).
+GitHub clone으로 새 Mac에 설치할 때는 맨 위의 **처음 시작하기: clone → 설치 → 사용** 및 **빈 바탕화면 클릭 → 따라오기** 절차를 따르세요. [SHARING.md](SHARING.md)는 이전 0.3.0 ZIP 공유 안내입니다. 0.3은 승인된 원본 키포즈만 사용하며, Pets에서 새로 생성한 그림이나 rap-v3 재생성 그림은 실행 리소스에 사용하지 않습니다. 랩은 정면 좌우 반복으로 정리했습니다. 휴식·기상은 원본 그림을 40도 회전하고 되돌리는 Swift 렌더링 전환입니다(새 팔다리 포즈 생성 아님).
 
 이 앱은 **ChatGPT 내장 dots/Pets가 아닌 독립 macOS 앱**입니다. 텍스트·음성 입력, LLM 호출, 로그인은 없습니다. v0.2는 로컬 Codex 앱 및 VS Code의 OpenAI Codex 확장에서 보내는 작업 이벤트를 수신합니다. **훅 등록과 사용자 신뢰 검토가 필요**하며, 다른 VS Code AI 확장이나 원격/클라우드 실행은 포함하지 않습니다. 자세한 연결 절차는 `GPT-CONNECTION.md`를 보세요.
 
