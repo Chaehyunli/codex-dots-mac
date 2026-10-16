@@ -21,7 +21,36 @@ zsh build.sh ./dist/Dots.app
 3. Dots 메뉴의 **바탕화면 클릭 따라오기**를 켜고, 앱을 완전히 종료한 뒤 다시 실행합니다. **사용 방법 / 권한**에 `현재 실행 앱에 권한 적용됨`이 표시되는지 확인하세요.
 4. 우사기와 같은 모니터의 **아이콘·창이 없는 빈 바탕화면을 왼쪽 클릭**하면 그쪽으로 달려옵니다. 작동하지 않으면 아래 **빈 바탕화면 클릭 → 따라오기: 새 Mac 설정**의 문제 해결 절차를 따르세요.
 
-기본 사용법: **우사기 클릭 → 회전**, **우사기 위에 커서 올리기 → 랩 댄스**, **우사기 드래그 → 위치 이동**입니다. Codex/VS Code의 GPT 작업 중 자동 춤은 선택 기능이며, 앱 설치만으로 연결되지 않습니다. 사용하려면 [GPT-CONNECTION.md](GPT-CONNECTION.md)의 훅 설정을 별도로 진행하세요. 앱 안에서도 우클릭 또는 메뉴 막대 토끼 아이콘의 **사용 방법 / 권한**을 열어 조작법을 확인할 수 있습니다.
+기본 사용법: **우사기 클릭 → 회전**, **우사기 위에 커서 올리기 → 랩 댄스**, **우사기 드래그 → 위치 이동**입니다. Codex/VS Code의 GPT 작업 중 자동 춤은 선택 기능이며, 앱 설치만으로 연결되지 않습니다. 사용하려면 바로 아래의 훅 등록 절차를 진행하세요. 앱 안에서도 우클릭 또는 메뉴 막대 토끼 아이콘의 **사용 방법 / 권한**을 열어 조작법을 확인할 수 있습니다.
+
+## Codex 작업 중 자동 댄스 연결하기
+
+**앱을 빌드·실행한 것만으로는 Codex 이벤트가 전달되지 않습니다.** 아래 과정은 새 Mac에서 한 번씩 해야 합니다. 앱은 최종 사용할 위치로 먼저 옮기고 실행해 두세요. 이 연결에는 macOS **손쉬운 사용 권한이 필요하지 않습니다**. 그 권한은 빈 바탕화면 클릭을 구분할 때만 사용합니다.
+
+1. 터미널에서 위에서 clone한 `Dots-source` 폴더 안에서 훅 등록 도구를 빌드합니다. 설치 명령을 이어서 실행 중이라면 이미 해당 폴더 안에 있으므로 `cd`를 다시 입력하지 마세요.
+
+   ```sh
+   swiftc Tools/HookConfig.swift -o ./dist/DotsHookConfig
+   ```
+
+2. **실제로 실행할 `Dots.app`의 경로**를 지정해 Codex 사용자 훅을 등록합니다. 앱을 `dist`에서 그대로 쓰는 경우:
+
+   ```sh
+   ./dist/DotsHookConfig install "$HOME/.codex/hooks.json" "$PWD/dist/Dots.app"
+   ```
+
+   앱을 `/Applications`로 옮겼다면 **위 명령 대신** 다음을 실행하세요. 바탕화면 등 다른 위치라면 마지막 인자를 해당 앱의 절대 경로로 바꾸세요.
+
+   ```sh
+   ./dist/DotsHookConfig install "$HOME/.codex/hooks.json" "/Applications/Dots.app"
+   ```
+
+   `CODEX_HOME`을 별도로 설정했다면 `$HOME/.codex/hooks.json` 대신 **그 설정 폴더의 `hooks.json`**을 지정해야 합니다. 도구는 기존 훅을 보존·병합하고 백업을 만들지만, 훅을 자동으로 신뢰하지는 않습니다.
+
+3. [Codex CLI](https://learn.chatgpt.com/docs/codex/cli)가 없다면 설치한 뒤, 터미널에서 `codex`를 실행하고 `/hooks`를 입력하세요. **Dots의 `UserPromptSubmit`, `Stop`, `Interrupt`, `SessionEnd` 핸들러 네 개를 직접 확인하고 신뢰**해야 합니다. 공식 [OpenAI Docs의 훅 안내](https://learn.chatgpt.com/docs/hooks)에 따르면 신뢰하지 않은 사용자 훅은 실행되지 않습니다. 신뢰 우회 옵션을 사용하지 마세요.
+4. 필요하면 Codex 앱·CLI를 다시 열고 VS Code의 Codex 확장을 쓰는 창은 Reload합니다. Dots 메뉴에서 **GPT 응답 중 자동 댄스**가 켜져 있는지 확인한 뒤 새 질문을 보내세요. 응답이 진행되는 동안 춤추고 완료되면 멈추는지 확인합니다. 메뉴 상단의 활성 작업 수도 확인할 수 있습니다.
+
+같은 macOS 사용자와 Codex 설정을 공유하는 **로컬 Codex 앱·CLI·VS Code Codex 확장**을 위한 연결입니다. 다만 이 프로젝트의 실사용 검증 기록은 Codex 앱과 VS Code 확장 중심이며, **CLI는 별도 실사용 검증이 필요합니다**. 원격/클라우드 작업이나 다른 AI 확장에는 자동 적용되지 않습니다. 앱을 옮겨 실행 파일 경로가 바뀌면 훅을 다시 등록하고 신뢰 상태를 확인하세요. 자세한 동작·제한·제거 방법은 [GPT-CONNECTION.md](GPT-CONNECTION.md)를 참고하세요.
 
 ## GitHub 저장소로 관리하기
 
