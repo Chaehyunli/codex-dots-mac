@@ -25,11 +25,12 @@ zsh build.sh ./dist/Dots.app
 
 ## Codex 작업 중 자동 댄스 연결하기
 
-**앱을 빌드·실행한 것만으로는 Codex 이벤트가 전달되지 않습니다.** 아래 과정은 새 Mac에서 한 번씩 해야 합니다. 앱을 최종 사용할 위치로 먼저 옮기고 실행해 두세요.
+**clone·빌드·실행만으로는 Codex 이벤트가 전달되지 않습니다.** 새 Mac마다 아래 연결을 한 번씩 진행하세요. 앱을 최종 사용할 위치로 먼저 옮기고 실행해 두세요. 저장소에는 개인 설정 파일 `~/.codex/hooks.json`이 포함되지 않습니다.
 
-1. 우사기를 우클릭하거나 메뉴 막대 토끼 아이콘을 눌러 **Codex 자동 댄스 연결…**을 선택합니다. 확인 창의 **현재 앱 경로**와 **수정할 `hooks.json` 경로**를 확인하고 **연결**을 누릅니다. 앱은 기존 사용자 훅을 보존·백업하고 Dots의 네 가지 핸들러를 등록합니다. Codex의 훅 신뢰는 자동 승인하지 않습니다.
-2. Codex 앱의 **설정 → Hooks**에서 Dots 훅을 검토합니다. [Codex CLI](https://learn.chatgpt.com/docs/codex/cli)를 사용하는 경우에는 `codex`를 실행하고 `/hooks`를 입력해도 됩니다. **Dots의 `UserPromptSubmit`, `Stop`, `Interrupt`, `SessionEnd` 핸들러를 직접 검토하고 신뢰**하세요. 공식 [OpenAI Docs의 훅 안내](https://learn.chatgpt.com/docs/hooks)에 따르면 신뢰하지 않은 사용자 훅은 실행되지 않습니다. 신뢰 우회 옵션은 사용하지 마세요.
-3. 필요하면 Codex 앱·CLI를 다시 열고 VS Code의 Codex 확장을 쓰는 창은 Reload합니다. Dots 메뉴의 **GPT 응답 중 자동 댄스**가 켜져 있는지 확인하고 새 질문을 보내세요. 응답 중 춤추고 완료되면 멈추는지, 메뉴 상단의 활성 작업 수가 바뀌는지 확인합니다.
+1. 우사기를 우클릭하거나 메뉴 막대 토끼 아이콘을 눌러 **Codex 자동 댄스 연결…**을 선택합니다. 확인 창의 **현재 앱 경로**와 **수정할 `hooks.json` 경로**를 확인하고 **연결**을 누릅니다. 이 버튼이 해당 Mac의 `~/.codex/hooks.json`(또는 창에 표시된 `CODEX_HOME` 경로)에 Dots의 `UserPromptSubmit`, `Stop`, `Interrupt`, `SessionEnd` 핸들러 **4개를 자동 등록**합니다. 기존 사용자 훅은 보존·백업하므로 JSON을 직접 작성할 필요는 없습니다. 단, 훅 신뢰는 자동 승인하지 않습니다.
+2. 등록을 확인하려면 터미널에서 `grep -nE 'UserPromptSubmit|Stop|Interrupt|SessionEnd|Dots.app' ~/.codex/hooks.json`을 실행하세요. 네 이벤트에 Dots 앱의 **실제 설치 경로**가 들어 있어야 합니다. Codex 앱의 **설정 → Hook** 화면이 비어 있더라도 이것만으로 `hooks.json` 등록 실패라고 판단하지 마세요. 이 Mac에서는 해당 화면이 비어 있어도 파일에는 네 핸들러가 등록되어 있고 자동 댄스가 동작했습니다.
+3. Codex가 새 훅의 검토·신뢰를 요청하면 **Dots 명령과 경로를 직접 확인한 뒤 승인**하세요. [공식 OpenAI Docs의 훅 안내](https://learn.chatgpt.com/docs/hooks)에 따르면 신뢰하지 않은 사용자 훅은 실행되지 않습니다. [Codex CLI](https://learn.chatgpt.com/docs/codex/cli)가 설치되어 있다면 `codex`를 실행하고 `/hooks`에서 상태를 검토할 수 있습니다. 신뢰 우회 옵션은 사용하지 마세요. 이미 자동 댄스가 정상 동작한다면 빈 Hook 화면 때문에 별도의 승인을 반복할 필요는 없습니다.
+4. 필요하면 Codex 앱·CLI를 다시 열고 VS Code의 Codex 확장을 쓰는 창은 Reload합니다. Dots 메뉴의 **GPT 응답 중 자동 댄스**가 켜져 있는지 확인하고 새 질문을 보내세요. 응답 중 춤추고 완료되면 멈추는지, 메뉴 상단의 활성 작업 수가 바뀌는지 확인합니다. 커서를 우사기 위에 올렸을 때 추는 춤은 별도 기능이므로 연동 확인으로 간주하지 마세요.
 
 이 연결에 macOS **손쉬운 사용 권한은 필요하지 않습니다**. 그 권한은 빈 바탕화면 클릭을 구분할 때만 사용합니다. 앱 메뉴는 일반적인 `~/.codex/hooks.json` 또는 Dots 프로세스에 전달된 절대 경로 `CODEX_HOME`을 사용합니다. 다른 `CODEX_HOME`으로 Codex를 실행하거나 앱이 해당 환경 변수를 받지 못한 경우에는 [GPT-CONNECTION.md](GPT-CONNECTION.md)의 수동 등록 방법으로 **정확한 설정 경로**를 지정하세요. 앱을 옮겨 실행 경로가 달라졌다면 새 위치의 앱에서 다시 연결하고 훅 신뢰 상태를 확인해야 합니다.
 
