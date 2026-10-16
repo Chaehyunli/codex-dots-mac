@@ -1,0 +1,30 @@
+# Compiler/cache output
+.build/
+.swiftpm/
+DerivedData/
+dist/
+build/
+
+# Executable bundles and delivery archives (not source artwork)
+*.app/
+*.dSYM/
+*.zip
+/Tools/DotsHookConfig
+/Tools/pack-sprites
+/Tools/replace-rap
+
+# Machine-local state and secrets
+.DS_Store
+._*
+.env
+.env.*
+!.env.example
+.codex/
+hooks.json
+hooks.before-dots-*.json
+*.p12
+*.mobileprovision
+xcuserdata/
+*.xcuserstate
+
+# Resources/*.png, *.webp, *.icns and animations.json MUST be committed.
