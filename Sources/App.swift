@@ -240,35 +240,46 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc func showWelcome() {
         if let welcome { welcome.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps:true); refreshPermissionLabel(); return }
-        let window = NSWindow(contentRect:NSRect(x:0,y:0,width:500,height:510),styleMask:[.titled,.closable],backing:.buffered,defer:false)
+        let window = NSWindow(contentRect:NSRect(x:0,y:0,width:560,height:690),styleMask:[.titled,.closable],backing:.buffered,defer:false)
         window.title = "Dots에 온 걸 환영해요"; window.isReleasedWhenClosed = false
         window.backgroundColor = NSColor(calibratedRed:0.98,green:0.97,blue:0.94,alpha:1)
-        let root = NSView(frame:NSRect(x:0,y:0,width:500,height:510)); window.contentView = root
+        let root = NSView(frame:NSRect(x:0,y:0,width:560,height:690)); window.contentView = root
         func label(_ text:String,_ x:CGFloat,_ y:CGFloat,_ w:CGFloat,_ h:CGFloat,_ size:CGFloat,_ weight:NSFont.Weight = .regular) -> NSTextField {
             let l = NSTextField(wrappingLabelWithString:text); l.frame = NSRect(x:x,y:y,width:w,height:h); l.font = .systemFont(ofSize:size,weight:weight); l.textColor = NSColor(calibratedRed:0.28,green:0.23,blue:0.18,alpha:1); root.addSubview(l); return l
         }
-        let art = NSImageView(frame:NSRect(x:24,y:374,width:108,height:108)); art.image = atlas.images.first; art.imageScaling = .scaleProportionallyUpOrDown; root.addSubview(art)
-        _ = label("작은 우사기,\n너의 바탕화면에.",142,404,330,65,25,.bold)
-        _ = label("말을 걸지 않아도 괜찮아요. 마우스로 함께 놀아요.",142,378,326,24,12)
-        _ = label("클릭하면 빙글빙글",38,322,210,24,16,.semibold)
-        _ = label("우사기를 톡 누르면 회전",38,295,210,24,12)
-        _ = label("인어섬 랩 댄스",265,322,215,24,16,.semibold)
-        _ = label("GPT 응답 중 댄스 · 훅 연결 후 자동 반응",265,295,215,32,11)
-        _ = label("잡아서 옮기기",38,252,210,24,16,.semibold)
-        _ = label("드래그하고 놓으면 말랑하게 착지",38,225,220,24,12)
-        _ = label("빈 곳을 누르면 달려오기",265,252,220,24,16,.semibold)
-        _ = label("바탕화면의 빈 공간에만 반응해요",265,225,220,24,12)
-        permissionLabel = label("",38,163,425,43,12,.medium)
-        _ = label("손쉬운 사용 권한은 바탕화면의 빈 곳과 파일 아이콘을 구분할 때만 사용해요. 화면 녹화·키보드 입력·인터넷 연결은 사용하지 않아요.",38,99,425,55,11)
-        let permission = NSButton(title:"바탕화면 따라오기 설정",target:self,action:#selector(openPermission)); permission.bezelStyle = .rounded; permission.frame = NSRect(x:32,y:49,width:224,height:34); root.addSubview(permission)
-        let play = NSButton(title:"우사기랑 놀기",target:self,action:#selector(closeWelcome)); play.bezelStyle = .rounded; play.frame = NSRect(x:320,y:49,width:146,height:34); root.addSubview(play)
-        _ = label("우클릭 또는 메뉴 막대의 토끼 아이콘에서 설정·종료할 수 있어요.",38,14,425,22,10)
+        let art = NSImageView(frame:NSRect(x:24,y:560,width:105,height:105)); art.image = atlas.images.first; art.imageScaling = .scaleProportionallyUpOrDown; root.addSubview(art)
+        _ = label("작은 우사기,\n너의 바탕화면에.",145,588,380,76,25,.bold)
+        _ = label("말을 걸지 않아도 괜찮아요. 마우스로 함께 놀아요.",145,559,380,22,12)
+        _ = label("클릭하면 빙글빙글",32,532,220,24,16,.semibold)
+        _ = label("우사기를 톡 누르면 회전",32,506,220,22,12)
+        _ = label("인어섬 랩 댄스",286,532,242,24,16,.semibold)
+        _ = label("GPT 응답 중 댄스 · 훅 연결 후 자동 반응",286,506,242,22,11)
+        _ = label("잡아서 옮기기",32,473,220,24,16,.semibold)
+        _ = label("드래그하고 놓으면 말랑하게 착지",32,448,220,22,12)
+        _ = label("빈 곳을 누르면 달려오기",286,473,242,24,16,.semibold)
+        _ = label("같은 모니터의 빈 바탕화면만 반응",286,448,242,22,12)
+        _ = label("바탕화면 따라오기 설정",32,412,496,26,17,.semibold)
+        _ = label("1. Dots.app을 최종 사용할 위치로 옮긴 뒤 실행하세요.",32,386,496,23,12)
+        _ = label("2. 아래 설정 버튼 → 개인정보 보호 및 보안 → 손쉬운 사용에서 이 Dots를 허용하세요.",32,348,496,36,12)
+        _ = label("3. Dots를 완전히 종료하고 다시 실행해 권한 적용 표시를 확인하세요.",32,320,496,24,12)
+        _ = label("4. 우사기와 같은 모니터의 빈 바탕화면을 왼쪽 클릭하세요.",32,292,496,24,12)
+        permissionLabel = label("",32,244,496,43,12,.medium)
+        _ = label("설정이 켜져 있는데 권한 미적용인가요?",32,213,496,23,12,.semibold)
+        _ = label("손쉬운 사용 목록에서 기존 Dots를 '−'로 제거 → '+'로 아래 경로의 Dots.app을 직접 추가해 켜기 → Dots 종료 후 재실행하세요.",32,158,496,53,11)
+        let pathLabel = label("현재 실행 앱: \(Bundle.main.bundleURL.path)",32,105,496,49,10,.medium)
+        pathLabel.lineBreakMode = .byCharWrapping
+        pathLabel.toolTip = Bundle.main.bundleURL.path
+        _ = label("손쉬운 사용은 빈 곳과 아이콘을 구분할 때만 사용합니다. 화면 녹화·키보드 입력·인터넷 연결은 사용하지 않습니다.",32,67,496,34,10)
+        let permission = NSButton(title:"바탕화면 따라오기 설정",target:self,action:#selector(openPermission)); permission.bezelStyle = .rounded; permission.frame = NSRect(x:28,y:22,width:205,height:34); root.addSubview(permission)
+        let locate = NSButton(title:"현재 앱 찾기",target:self,action:#selector(revealCurrentApp)); locate.bezelStyle = .rounded; locate.frame = NSRect(x:242,y:22,width:132,height:34); root.addSubview(locate)
+        let play = NSButton(title:"우사기랑 놀기",target:self,action:#selector(closeWelcome)); play.bezelStyle = .rounded; play.frame = NSRect(x:390,y:22,width:142,height:34); root.addSubview(play)
         welcome = window; refreshPermissionLabel(); window.center(); window.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps:true)
     }
     func refreshPermissionLabel() {
-        permissionLabel?.stringValue = monitor.detector.hasPermission ? "✓ 바탕화면 따라오기 준비 완료\n권한을 켠 뒤에도 반응이 없다면 Dots를 다시 실행해 주세요." : "바탕화면 따라오기: 손쉬운 사용 권한이 필요해요.\n클릭·회전·드래그는 지금 바로 사용할 수 있어요."
+        permissionLabel?.stringValue = monitor.detector.hasPermission ? "✓ 현재 실행 앱에 권한 적용됨\n같은 모니터의 빈 바탕화면을 클릭해 확인하세요." : "권한 미적용 · 현재 실행 앱에는 손쉬운 사용 권한이 없습니다.\n스위치가 켜져 있다면 아래 재등록 절차를 따르세요."
     }
     @objc func closeWelcome() { welcome?.close() }
+    @objc func revealCurrentApp() { NSWorkspace.shared.activateFileViewerSelecting([Bundle.main.bundleURL]) }
     @objc func openPermission() {
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String:true] as CFDictionary
         _ = AXIsProcessTrustedWithOptions(options)
