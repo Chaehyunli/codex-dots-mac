@@ -186,6 +186,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         item("바탕화면 클릭 따라오기",#selector(toggleFollow),defaults.object(forKey:"followDesktop") as? Bool != false)
         item("집중 모드",#selector(toggleQuiet),engine.quiet)
         item("GPT 응답 중 자동 댄스",#selector(toggleActivity),activityEnabled)
+        item("Codex 자동 댄스 연결…",#selector(connectCodex))
         item(demoActive ? "연동 데모 끝내기" : "연동 데모 시작 (실제 GPT 아님)",#selector(toggleDemo))
         item("작업 상태 초기화",#selector(resetActivity))
         item("추임새 말풍선",#selector(toggleSpeech),petView?.speechEnabled ?? false)
@@ -217,6 +218,59 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         engine.setActivity(danceTriggers.active && !hidden,at:now)
     }
     @objc func toggleActivity() { defaults.set(!activityEnabled,forKey:"activityEnabled"); syncActivity() }
+    @objc func connectCodex() {
+        NSApp.activate(ignoringOtherApps:true)
+        let appURL = Bundle.main.bundleURL.standardizedFileURL
+        let helperURL = appURL.appendingPathComponent("Contents/MacOS/DotsHookConfig")
+        guard FileManager.default.isExecutableFile(atPath:helperURL.path) else {
+            let alert = NSAlert()
+            alert.messageText = "연결 도구를 찾을 수 없어요"
+            alert.informativeText = "이 Dots.app에는 Codex 연결 도구가 없습니다. 최신 소스에서 zsh build.sh로 다시 빌드한 앱을 실행하세요."
+            alert.runModal()
+            return
+        }
+        let environment = ProcessInfo.processInfo.environment
+        let configuredHome = environment["CODEX_HOME"].flatMap { $0.isEmpty ? nil : $0 }
+        if let configuredHome, !configuredHome.hasPrefix("/") {
+            let alert = NSAlert()
+            alert.messageText = "CODEX_HOME 경로를 확인해 주세요"
+            alert.informativeText = "상대 경로 CODEX_HOME은 앱에서 자동 연결할 수 없습니다. 절대 경로로 설정하거나 README의 수동 등록 방법을 사용하세요."
+            alert.runModal()
+            return
+        }
+        let codexHome = configuredHome.map { URL(fileURLWithPath:$0) }
+            ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".codex")
+        let hooksURL = codexHome.appendingPathComponent("hooks.json")
+        let confirm = NSAlert()
+        confirm.messageText = "Codex 자동 댄스를 연결할까요?"
+        confirm.informativeText = "현재 앱: \(appURL.path)\n설정 파일: \(hooksURL.path)\n\n기존 훅을 보존·백업하고 Dots 핸들러 4개를 등록합니다. Codex의 훅 신뢰는 자동 승인하지 않습니다."
+        confirm.addButton(withTitle:"연결")
+        confirm.addButton(withTitle:"취소")
+        guard confirm.runModal() == .alertFirstButtonReturn else { return }
+        let task = Process()
+        task.executableURL = helperURL
+        task.arguments = ["install",hooksURL.path,appURL.path]
+        let outputPipe = Pipe()
+        task.standardOutput = outputPipe
+        task.standardError = outputPipe
+        let result = NSAlert()
+        do {
+            try task.run()
+            let output = String(data:outputPipe.fileHandleForReading.readDataToEndOfFile(),encoding:.utf8) ?? ""
+            task.waitUntilExit()
+            if task.terminationStatus == 0 {
+                result.messageText = "Codex 훅 등록 완료"
+                result.informativeText = "Dots의 네 가지 훅을 등록했습니다. Codex 앱의 Hooks 설정 또는 Codex CLI의 /hooks에서 Dots 핸들러를 직접 검토·신뢰하세요. 승인 후 새 질문을 보내면 춤추기 시작합니다.\n\n\(output)"
+            } else {
+                result.messageText = "Codex 연결에 실패했어요"
+                result.informativeText = "훅 설정은 적용되지 않았을 수 있습니다. README의 수동 연결 방법을 확인하세요.\n\n\(output)"
+            }
+        } catch {
+            result.messageText = "Codex 연결에 실패했어요"
+            result.informativeText = error.localizedDescription
+        }
+        result.runModal()
+    }
     @objc func toggleDemo() {
         demoActive.toggle()
         let t = Date().timeIntervalSince1970
@@ -253,7 +307,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         _ = label("클릭하면 빙글빙글",32,532,220,24,16,.semibold)
         _ = label("우사기를 톡 누르면 회전",32,506,220,22,12)
         _ = label("인어섬 랩 댄스",286,532,242,24,16,.semibold)
-        _ = label("GPT 응답 중 댄스 · 훅 연결 후 자동 반응",286,506,242,22,11)
+        _ = label("메뉴의 Codex 연결 후 훅 신뢰 승인",286,506,242,22,11)
         _ = label("잡아서 옮기기",32,473,220,24,16,.semibold)
         _ = label("드래그하고 놓으면 말랑하게 착지",32,448,220,22,12)
         _ = label("빈 곳을 누르면 달려오기",286,473,242,24,16,.semibold)

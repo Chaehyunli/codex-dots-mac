@@ -21,8 +21,8 @@
 
 ## 사용자 확인이 필요한 마지막 단계
 
-1. `Dots.app`을 먼저 실행해 둡니다.
-2. Codex의 훅 검토 기능에서 **Dots의 네 가지 핸들러만** 내용을 확인하고 신뢰합니다. 공식 CLI 경로는 `codex`를 실행한 후 `/hooks`입니다. 신뢰 설정은 이 제작 과정에서 자동 승인하지 않습니다.
+1. `Dots.app`을 최종 위치에 놓고 실행한 뒤, 우사기 우클릭 또는 메뉴 막대 토끼 아이콘에서 **Codex 자동 댄스 연결…**을 선택합니다. 앱이 보여 주는 **현재 앱 경로**와 **수정할 `hooks.json` 경로**를 확인하고 **연결**을 누릅니다. 앱에 포함된 `DotsHookConfig`가 기존 훅을 보존·백업하며 Dots 핸들러를 등록합니다. 앱 설치만으로 자동 등록되지는 않습니다.
+2. Codex 앱의 **설정 → Hooks** 또는 Codex CLI에서 `codex` 실행 후 `/hooks`를 열어 **Dots의 네 가지 핸들러만** 내용을 확인하고 신뢰합니다. 신뢰 설정은 Dots가 자동 승인하지 않습니다.
 3. 필요하면 Codex를 다시 열고 VS Code 창을 Reload합니다. 작업 중인 내용이 있다면 먼저 마무리하세요. 이 제작 과정에서는 두 앱을 강제로 재시작하지 않습니다.
 4. 새 질문을 보내 우사기가 춤추는지, 완료·중단 후 멈추는지 확인합니다. 메뉴 상단에서 수신된 활성 작업 수를 볼 수 있습니다.
 5. 두 앱에서 동시에 작업했을 때 하나만 끝내면 계속 춤추고, 마지막 작업까지 끝내면 멈추어야 합니다.
@@ -43,15 +43,14 @@ Codex가 훅 표준 입력에 프롬프트 등의 필드를 포함할 수 있지
 - 작업 이벤트 기반이므로 도구 실행·승인 대기 중에도 춤춥니다. 생성 중 토큰 유무를 감시하지 않습니다.
 - 공증된 배포 앱이 아닌 로컬 개발용 빌드입니다. 앱 경로를 바꾸면 훅 명령도 다시 등록하고 신뢰 검토해야 합니다.
 
-## 등록 / 제거 도구
+## 수동 등록 / 제거 도구
 
-소스 폴더에서 Xcode Command Line Tools를 사용합니다. 실제 경로는 아래 인자를 본인 환경에 맞게 지정하세요.
+기본 연결은 앱 메뉴의 **Codex 자동 댄스 연결…**을 사용하세요. `CODEX_HOME`이 Dots 앱 프로세스에 전달되지 않는 환경이라면 아래 명령으로 정확한 Codex 설정 경로를 지정할 수 있습니다. 앱의 **사용 방법 / 권한 → 현재 앱 찾기**에서 실제 실행 중인 앱 위치를 확인하고, 아래 두 절대 경로를 그 위치에 맞게 바꾸세요. 새 빌드에는 `DotsHookConfig`가 앱 안에 포함됩니다.
 
 ```sh
-swiftc Tools/HookConfig.swift -o /tmp/dots-hook-config
-/tmp/dots-hook-config install /absolute/path/to/.codex/hooks.json /absolute/path/to/Dots.app
+"/absolute/path/to/Dots.app/Contents/MacOS/DotsHookConfig" install "/absolute/path/to/.codex/hooks.json" "/absolute/path/to/Dots.app"
 # 제거할 때: 다른 핸들러는 보존하고 Dots의 식별된 핸들러만 제거
-/tmp/dots-hook-config remove /absolute/path/to/.codex/hooks.json /absolute/path/to/Dots.app
+"/absolute/path/to/Dots.app/Contents/MacOS/DotsHookConfig" remove "/absolute/path/to/.codex/hooks.json" "/absolute/path/to/Dots.app"
 ```
 
-도구는 기존 JSON을 보존·병합하고 같은 폴더에 UUID가 포함된 `hooks.before-dots-…json` 백업을 남깁니다. 기존 Notchi 핸들러나 `config.toml`, 훅 신뢰 저장소는 수정하지 않습니다. 제거 후에도 이전 백업을 통째로 덮어쓰지 않는 방식이 이후 설정을 보존합니다.
+앱 안에 도구가 없는 이전 빌드라면 소스 폴더에서 `swiftc Tools/HookConfig.swift -o /tmp/dots-hook-config`로 별도 컴파일할 수 있습니다. 도구는 기존 JSON을 보존·병합하고 같은 폴더에 UUID가 포함된 `hooks.before-dots-…json` 백업을 남깁니다. 기존 Notchi 핸들러나 `config.toml`, 훅 신뢰 저장소는 수정하지 않습니다. 제거 후에도 이전 백업을 통째로 덮어쓰지 않는 방식이 이후 설정을 보존합니다.
